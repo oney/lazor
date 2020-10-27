@@ -1,2 +1,6 @@
+from BFF import BFF
+
+
 if __name__ == "__main__":
-    print("Solve lazor")
+    bff = BFF("numbered_6.bff")
+    print(bff)
