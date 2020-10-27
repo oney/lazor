@@ -1,6 +1,7 @@
 import time
 from BFF import BFF
 from Solver import Solver
+from Output import Output
 
 
 if __name__ == "__main__":
@@ -10,3 +11,4 @@ if __name__ == "__main__":
     solver = Solver(bff)
     solution = solver.solve()
     print("solution", solution)
+    Output(bff, solution)
