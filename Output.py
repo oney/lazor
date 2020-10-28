@@ -15,7 +15,7 @@ def get_colors():
 
     **Returns**
 
-        color_map: *dict, int, tuple*
+        color_map: *dict, int, tuple, int*
             A dictionary that will correlate the integer key to
             a color.
     '''
