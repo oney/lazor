@@ -51,6 +51,7 @@ To help understand the output png image, we used different colors to indicate di
 - Pink = fixed reflect block
 - Blue = fixed opaque block
 - Yellow = fixed refract block
+- Grey = no block
 
 As an example, for solution.txt with the following grid:
 
