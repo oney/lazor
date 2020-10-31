@@ -1,11 +1,41 @@
 def repr_board(m):
+    '''
+    This will represent the board from a list to string
+
+    Parameters
+    ----------
+    m : list
+        A list representation of the board
+
+    Returns
+    -------
+    str
+        A string representation of the board
+
+    '''
     return "\n".join(" ".join(line) for line in m)
 
 
 class BFF:
+    '''
+    This BFF class will handle the .bff file that will be solved as the board
+    '''
     blockMap = ["A", "B", "C"]
 
     def __init__(self, fptr):
+        '''
+        Initiate class variables
+
+        Parameters
+        ----------
+        fptr : .bff file
+            The .bff file of the board
+
+        Returns
+        -------
+        None.
+
+        '''
         self.board = []
         self.blocks = [0, 0, 0]
         self.lazors = []
@@ -14,7 +44,36 @@ class BFF:
         self.read(fptr)
 
     def read(self, fptr):
+        '''
+        Read in the .bff file and handle each line in the file to assign
+        values to the initiated class variables
+
+        Parameters
+        ----------
+        fptr : .bff file
+            The .bff file of the board
+
+        Returns
+        -------
+        None.
+
+        '''
         def handle(line):
+            '''
+            This handles each line in the .bff file based on what they are and
+            assign those line into the initiated class variables based on the
+            information.
+
+            Parameters
+            ----------
+            line : str
+                Each str lines in the .bff file
+
+            Returns
+            -------
+            None.
+
+            '''
             if line.startswith("#") or len(line) == 0:
                 return
             if line == "GRID START":
@@ -36,6 +95,17 @@ class BFF:
                 handle(line.strip())
 
     def __str__(self):
+        '''
+        This will map the class variables into str type based on the define
+        order
+
+        Returns
+        -------
+        TYPE str
+            str represenation of all of the class variabels based on the
+            defined order.
+
+        '''
         return "\n".join(
             map(str, [
                 repr_board(self.board),
