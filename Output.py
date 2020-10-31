@@ -2,22 +2,36 @@ from PIL import Image
 
 
 def repr_board(m):
+    '''
+    This will represent the board from a list to string
+
+    Parameters
+    ----------
+    m : list
+        A list representation of the board
+
+    Returns
+    -------
+    str
+        A string representation of the board
+
+    '''
     return "\n".join(" ".join(line) for line in m)
 
 
 def get_colors():
     '''
-    Colors map that the map will use:
+    Colors map that the board will use:
         0 - No block
         1 - Fixed reflect block
         2 - Fixed opaque block
         3 - Fixed refract block
 
-    **Returns**
+    Returns
+    -------
+    dict
+        A dictionary that will correlate the integer key to a color
 
-        color_map: *dict, int, tuple, int*
-            A dictionary that will correlate the integer key to
-            a color.
     '''
     return {
         0: (211, 211, 211),
@@ -28,7 +42,27 @@ def get_colors():
 
 
 class Output:
+    '''
+    This class will output the solution into both txt and png files.
+    '''
     def __init__(self, bff, solution, block_size=50):
+        '''
+        Initiate class variables and call the defined functions
+
+        Parameters
+        ----------
+        bff : TYPE
+            DESCRIPTION.
+        solution : TYPE
+            DESCRIPTION.
+        block_size : TYPE, optional
+            DESCRIPTION. The default is 50.
+
+        Returns
+        -------
+        None.
+
+        '''
         self.bff = bff
         self.solution = solution
         self.txtname = "solution.txt"
@@ -38,11 +72,28 @@ class Output:
         self.output_PNG()
 
     def output(self):
+        '''
+        This outputs a txt file for the solution.
+
+        Returns
+        -------
+        None.
+
+        '''
         with open(self.txtname, 'w') as f:
             f.write(repr_board(self.solution)
                     if self.solution else "No solution!")
 
     def output_PNG(self):
+        '''
+        Based on the txt file of the solution, this outputs a PNG image for
+        the solution.
+
+        Returns
+        -------
+        None.
+
+        '''
         f = open(self.txtname, "r")
         f_lines = f.readlines()
         w = len(self.bff.board)
