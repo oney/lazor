@@ -1,9 +1,49 @@
 from BFF import BFF
 
 
+class Lazor:
+    def __init__(self, x, y, dx, dy):
+        self.x = x
+        self.y = y
+        self.dx = dx
+        self.dy = dy
+
+    def __eq__(self, other):
+        return other and self.x == other.x and self.y == other.y \
+            and self.dx == other.dx and self.dy == other.dy
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return hash((self.x, self.y, self.dx, self.dy))
+
+    def hit_block(self, board):
+        if self.x % 2 == 1:
+            mx = (self.x - 1)//2
+            my = self.y//2 - (1 if self.dy == -1 else 0)
+        else:
+            mx = self.x//2 - (1 if self.dx == -1 else 0)
+            my = (self.y - 1)//2
+
+        if mx < 0 or my < 0 or mx >= len(board[0]) or my >= len(board):
+            return None
+        return board[my][mx]
+
+    def step(self):
+        return Lazor(self.x + self.dx, self.y + self.dy, self.dx, self.dy)
+
+    def reflect(s):
+        if s.x % 2 == 1:
+            return Lazor(s.x + s.dx, s.y - s.dy, s.dx, -s.dy)
+        else:
+            return Lazor(s.x - s.dx, s.y + s.dy, -s.dx, s.dy)
+
+
 class Solver:
     def __init__(self, bff: BFF):
         self.bff = bff
+        self.lazors = [Lazor(x, y, dx, dy) for x, y, dx, dy in bff.lazors]
 
     def solve(self):
         blocks = self.bff.blocks
@@ -44,42 +84,22 @@ class Solver:
                 return
             passed.add(lazor)
 
-            x, y, dx, dy = lazor
-            if (x, y) in points:
-                points.remove((x, y))
+            if (lazor.x, lazor.y) in points:
+                points.remove((lazor.x, lazor.y))
 
-            # if x < 0 or y < 0 or x > len(board[0])*2 or y > len(board)*2:
-            #     return
-
-            if x % 2 == 1:
-                mx = (x - 1)//2
-                my = y//2 - (1 if dy == -1 else 0)
-            else:
-                mx = x//2 - (1 if dx == -1 else 0)
-                my = (y - 1)//2
-
-            if mx < 0 or my < 0 or mx >= len(board[0]) or my >= len(board):
+            block = lazor.hit_block(board)
+            if not block:
                 return
-            block = board[my][mx]
-
-            def step():
-                dfs((x + dx, y + dy, dx, dy))
-
-            def reflect():
-                if x % 2 == 1:
-                    dfs((x + dx, y - dy, dx, -dy))
-                else:
-                    dfs((x - dx, y + dy, -dx, dy))
 
             if block == "o" or block == "x":
-                step()
+                dfs(lazor.step())
             elif block == "A":
-                reflect()
+                dfs(lazor.reflect())
             elif block == "C":
-                step()
-                reflect()
+                dfs(lazor.step())
+                dfs(lazor.reflect())
 
-        for lazor in self.bff.lazors:
+        for lazor in self.lazors:
             dfs(lazor)
 
         return not points
