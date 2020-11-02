@@ -20,7 +20,6 @@ class BFF:
     '''
     This BFF class will handle the .bff file that will be solved as the board
     '''
-    blockMap = ["A", "B", "C"]
 
     def __init__(self, fptr):
         '''

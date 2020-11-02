@@ -40,14 +40,37 @@ class Lazor:
             return Lazor(s.x - s.dx, s.y + s.dy, -s.dx, s.dy)
 
 
+class Block:
+    blockMap = ["A", "B", "C"]
+
+    def __init__(self, type):
+        self.type = type
+
+    def placable(self):
+        return self.type == "o"
+
+    def place(self, type):
+        self.type = type
+
+    def react(self, lazor, dfs):
+        if self.type == "o" or self.type == "x":
+            dfs(lazor.step())
+        elif self.type == "A":
+            dfs(lazor.reflect())
+        elif self.type == "C":
+            dfs(lazor.step())
+            dfs(lazor.reflect())
+
+
 class Solver:
     def __init__(self, bff: BFF):
         self.bff = bff
+        self.board = [[Block(t) for t in x] for x in bff.board]
         self.lazors = [Lazor(x, y, dx, dy) for x, y, dx, dy in bff.lazors]
 
     def solve(self):
         blocks = self.bff.blocks
-        board = self.bff.board
+        board = self.board
         h = len(board)
         w = len(board[0])
 
@@ -60,20 +83,20 @@ class Solver:
                 for y in range(w):
                     if prv_b == b and x * w + y <= prv_pos:
                         continue
-                    if board[x][y] != "o":
+                    if not board[x][y].placable():
                         continue
-                    board[x][y] = BFF.blockMap[b]
+                    board[x][y].place(Block.blockMap[b])
 
                     if dfs(b, x * w + y):
                         return True
-                    board[x][y] = "o"
+                    board[x][y].place("o")
 
             blocks[b] += 1
             return False
-        return board if dfs(-1, -1) else None
+        return [[b.type for b in x] for x in board] if dfs(-1, -1) else None
 
     def solved(self):
-        board = self.bff.board
+        board = self.board
         points = set(self.bff.points)
         passed = set()
 
@@ -88,16 +111,8 @@ class Solver:
                 points.remove((lazor.x, lazor.y))
 
             block = lazor.hit_block(board)
-            if not block:
-                return
-
-            if block == "o" or block == "x":
-                dfs(lazor.step())
-            elif block == "A":
-                dfs(lazor.reflect())
-            elif block == "C":
-                dfs(lazor.step())
-                dfs(lazor.reflect())
+            if block:
+                block.react(lazor, dfs)
 
         for lazor in self.lazors:
             dfs(lazor)
