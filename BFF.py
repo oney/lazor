@@ -39,7 +39,6 @@ class BFF:
         self.blocks = [0, 0, 0]
         self.lazors = []
         self.points = []
-        self.griding = False
         self.read(fptr)
 
     def read(self, fptr):
@@ -57,7 +56,10 @@ class BFF:
         None.
 
         '''
+        griding = False
+
         def handle(line):
+            nonlocal griding
             '''
             This handles each line in the .bff file based on what they are and
             assign those line into the initiated class variables based on the
@@ -76,10 +78,10 @@ class BFF:
             if line.startswith("#") or len(line) == 0:
                 return
             if line == "GRID START":
-                self.griding = True
+                griding = True
             elif line == "GRID STOP":
-                self.griding = False
-            elif self.griding:
+                griding = False
+            elif griding:
                 line = line.replace(" ", "")
                 self.board.append(list(line))
             elif line[0] in ["A", "B", "C"]:

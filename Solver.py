@@ -101,14 +101,15 @@ class Solver:
         passed = set()
 
         def dfs(lazor):
-            if not points:
-                return
             if lazor in passed:
                 return
             passed.add(lazor)
 
-            if (lazor.x, lazor.y) in points:
-                points.remove((lazor.x, lazor.y))
+            hit_point = (lazor.x, lazor.y)
+            if hit_point in points:
+                points.remove(hit_point)
+            if not points:
+                return
 
             block = lazor.hit_block(board)
             if block:
