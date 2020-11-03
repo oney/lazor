@@ -4,6 +4,10 @@ Lazor group project for EN.540.635(Software Carpentry)
 
 This program can automatically find solutions to the "Lasers" game on Android and IPhone. 
 
+## Team members
+* Fangchi Shao <fshao1@jhmi.edu>
+*  Wan-Huang Yang <wyang47@jhu.edu>
+
 ## Directions to use
 1. Prepare a Lazor board via a text file with a specific format (.bff). Some of the boards were pregenerated in the release that can be used. The way to create a board is described in the next section.
 
