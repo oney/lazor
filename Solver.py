@@ -194,12 +194,35 @@ class Block:
 
 
 class Solver:
+    '''
+    The class to solve a BFF puzzle
+    '''
     def __init__(self, bff: BFF):
+        '''
+        The class initializer
+
+        **Parameters**
+
+            bff: *BFF class*
+                the bff
+
+        '''
         self.bff = bff
+        # map to Block class
         self.board = [[Block(t) for t in x] for x in bff.board]
+        # map to Lazor class
         self.lazors = [Lazor(x, y, dx, dy) for x, y, dx, dy in bff.lazors]
 
     def solve(self):
+        '''
+        Return a solution or None
+
+        **Returns**
+
+            board: *(2-D list of str) or None*
+                A solution or None
+
+        '''
         blockMap = ["A", "B", "C"]
 
         blocks = self.bff.blocks
@@ -208,42 +231,77 @@ class Solver:
         w = len(board[0])
 
         def dfs(prv_b, prv_pos):
+            # find the type of a remaining block that can be placed
             b = next((i for i, v in enumerate(blocks) if v != 0), None)
+
+            # if not found(means blocks = [0,0,0]), it means we place all
+            # blocks, so we can test whether the current board solve the puzzle
             if b is None:
                 return self.solved()
+
+            # When using a block, subtract it by 1
             blocks[b] -= 1
             for x in range(h):
                 for y in range(w):
+                    # This is to optimize the search by checking if previous
+                    # used block is the same and the position has been searched
+                    # If it is, we can skip
+                    # This optimization can shrink time complexity by A!B!C!
                     if prv_b == b and x * w + y <= prv_pos:
                         continue
+
+                    # If the (x, y) block is not placable, skip
                     if not board[x][y].placable():
                         continue
                     board[x][y].place(blockMap[b])
 
+                    # Place a block and keep placing by doing DFS
                     if dfs(b, x * w + y):
+                        # If dfs returns True, it means it found a solution,
+                        # so stop searching
                         return True
                     board[x][y].place("o")
 
+            # After current search finishes, add the block back
             blocks[b] += 1
             return False
+        # The board's items are mapped back from Block class to str
         return [[b.type for b in x] for x in board] if dfs(-1, -1) else None
 
     def solved(self):
+        '''
+        Return if the current board is a solution
+
+        **Returns**
+
+            flag: *bool*
+                Indicate if the current board is a solution
+
+        '''
         board = self.board
+
+        # record the remaining points that the lazors haven't passed
         points = set(self.bff.points)
+
+        # coordinates of positions and directions that the lazors have passed
         passed = set()
 
         def dfs(lazor):
+            # if the lazor is in passed, we should skip it
+            # otherwise, it would cause an infinite cycle.
             if lazor in passed:
                 return
             passed.add(lazor)
 
             hit_point = (lazor.x, lazor.y)
+            # remove the current point from points
             if hit_point in points:
                 points.remove(hit_point)
+            # if the target points all have been passed, stop searching
             if not points:
                 return
 
+            # handle the lazor hitting the block
             block = lazor.hit_block(board)
             if block:
                 block.react(lazor, dfs)
@@ -251,4 +309,5 @@ class Solver:
         for lazor in self.lazors:
             dfs(lazor)
 
+        # If all points have been passed, the current board is a solution
         return not points
