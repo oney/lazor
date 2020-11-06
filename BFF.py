@@ -1,3 +1,6 @@
+import os
+
+
 def repr_board(m):
     '''
     This will represent the board from a list to string
@@ -20,6 +23,7 @@ class BFF:
     '''
     This BFF class will handle the .bff file that will be solved as the board
     '''
+    blockMap = ["A", "B", "C"]
 
     def __init__(self, fptr):
         '''
@@ -35,11 +39,16 @@ class BFF:
         None.
 
         '''
-        self.board = []
-        self.blocks = [0, 0, 0]
-        self.lazors = []
-        self.points = []
-        self.read(fptr)
+        self.ext = os.path.splitext(fptr)[-1].lower()
+        if self.ext == '.bff':
+            self.board = []
+            self.blocks = [0, 0, 0]
+            self.lazors = []
+            self.points = []
+            self.read(fptr)
+        else:
+            raise NotImplementedError('Wrong input data type, please load'
+                                      ' the correct .bff file')
 
     def read(self, fptr):
         '''
@@ -56,10 +65,7 @@ class BFF:
         None.
 
         '''
-        griding = False
-
         def handle(line):
-            nonlocal griding
             '''
             This handles each line in the .bff file based on what they are and
             assign those line into the initiated class variables based on the
@@ -78,10 +84,10 @@ class BFF:
             if line.startswith("#") or len(line) == 0:
                 return
             if line == "GRID START":
-                griding = True
+                self.griding = True
             elif line == "GRID STOP":
-                griding = False
-            elif griding:
+                self.griding = False
+            elif self.griding:
                 line = line.replace(" ", "")
                 self.board.append(list(line))
             elif line[0] in ["A", "B", "C"]:
